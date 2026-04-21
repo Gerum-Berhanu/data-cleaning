@@ -1,10 +1,31 @@
 # Data Cleaning Report
 
-## General
+## Overview
 
-There are 10,000 records (recorded data) with 8 fields/features/columns. 
+There are 10,000 records (recorded data) with 8 fields/columns. The 8 fields, with their **expected** data types are:
+- Transaction ID *(str)*
+- Item *(int)*
+- Quantity *(float)*
+- Price Per Unit *(float)*
+- Total Spent *(float)*
+- Payment Method *(str)*
+- Location *(str)*
+- Transaction Date *(str)*
 
-Each recorded data is of type string.
+As-is, each recorded data is of type string as perceived by pandas.
+
+*(provided information)* Prices for menu items are consistent but may have missing or incorrect values introduced. The dataset includes the following menu items with their respective price ranges: 
+
+|Item|Price($)|
+|---|---|
+|Coffee|2|
+|Tea|1.5|
+|Sandwich|4|
+|Salad|5|
+|Cake|3|
+|Cookie|1|
+|Smoothie|4|
+|Juice|3|
 
 ## Null Values
 
