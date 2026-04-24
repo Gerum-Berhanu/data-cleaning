@@ -14,19 +14,6 @@ There are 10,000 records (recorded data) with 8 fields/columns. The 8 fields, wi
 
 As-is, each recorded data is of type string as perceived by pandas.
 
-*(provided information)* Prices for menu items are consistent but may have missing or incorrect values introduced. The dataset includes the following menu items with their respective price ranges: 
-
-|Item|Price($)|
-|---|---|
-|Coffee|2|
-|Tea|1.5|
-|Sandwich|4|
-|Salad|5|
-|Cake|3|
-|Cookie|1|
-|Smoothie|4|
-|Juice|3|
-
 ## Null Values
 
 ||Transaction ID|Item|Quantity|Price Per Unit|Total Spent|Payment Method|Location|Transaction Date|
@@ -78,5 +65,22 @@ Unwanted (dirty) values are: ERROR, UNKNOWN, nan
 | *nan* | *138* |
 
 **Total unwanted values: 479**
+**Minimum quantity: 1**
+**Maximum quantity: 5**
 
-From the recorded data, the maximum number of order quantity for an item is 5.
+> I think I should stop saving `value_counts` because more than half of the dataset contains null values. Quantity 5 has 2013 appearances, including those whose item is UNKOWN or whose price is nan. So, I don't think there would lie any meaningful info in keeping the counts.
+
+### Price Per Unit
+
+*(provided information)* Prices for menu items are consistent but may have missing or incorrect values introduced. The dataset includes the following menu items with their respective price ranges: 
+
+|Item|Price($)|
+|---|---|
+|Coffee|2|
+|Tea|1.5|
+|Sandwich|4|
+|Salad|5|
+|Cake|3|
+|Cookie|1|
+|Smoothie|4|
+|Juice|3|
