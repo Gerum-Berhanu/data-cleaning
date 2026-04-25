@@ -84,3 +84,15 @@ Unwanted (dirty) values are: ERROR, UNKNOWN, nan
 |Cookie|1|
 |Smoothie|4|
 |Juice|3|
+
+### Total Spent
+
+For records where `Total Spent` is null while `Quantity` and `Price Per Unit` are valid values, we recover (deduce the value of) `Total Spent` by multiplying the two valid columns. In doing so, the initial **502 NaNs** are reduced to **40 NaNs**.
+
+Applying this for `Quantity` and `Price Per Unit`, there respective initial NaN values and reduced ones are:
+
+- `Quantity`: from **479** to **38**
+- `Price Per Unit`: from **533** to **38**
+- `Total Spent`: from **502** to **40**
+
+Overall, by doing this correlating process, **1398 rows (individual datapoints)** were affected; those with a NaN value in either of the three columns are deduced to a valid form.
