@@ -96,3 +96,27 @@ Applying this for `Quantity` and `Price Per Unit`, there respective initial NaN 
 - `Total Spent`: from **502** to **40**
 
 Overall, by doing this correlating process, **1398 rows (individual datapoints)** were affected; those with a NaN value in either of the three columns are deduced to a valid form.
+
+### Payment Method
+
+The available payment methods are **Credit Card**, **Cash**, and **Digital Wallet**.
+
+### Location
+
+The available location values are **Takeaway** and **In-store**.
+
+### Transaction Date
+
+Turns out, the dataset is about transactions made each day throughout the 365 days of the entire 2023 year.
+
+Minimum sales happened in a day is 14.
+Maximum sales happened in a day is 40.
+On average (median), 26 sales are made in a day.
+
+## Analysis
+
+I think the only meaningful and impactful analysis we can do has the transaction date column at its center. We can make analysis on:
+- The progression of sales (transactions) through time.
+- Which months produced the lowest and the highest sales.
+- If there was a gradual shift in payment method or location.
+- Overall relation between each column and transaction date.
