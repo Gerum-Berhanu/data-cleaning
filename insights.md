@@ -14,64 +14,6 @@ There are 10,000 records (recorded data) with 8 fields/columns. The 8 fields, wi
 
 As-is, each recorded data is of type string as perceived by pandas.
 
-## Null Values
-
-||Transaction ID|Item|Quantity|Price Per Unit|Total Spent|Payment Method|Location|Transaction Date|
-|---|---|---|---|---|---|---|---|---|
-|Null|0|333|138|179|173|**2579**|**3265**|159|
-|Null Percentage|0%|3.3%|1.4%|1.8%|1.7%|**25.8%**|**32.7%**|1.6%|
-
-The column **Location** has the most null values **3265** among the other columns.
-
-Out of the total 10,000 rows, **5450 rows** -- meaning more than half of them -- contain at least 1 null value. This means, blindfoldly droping rows with null values for the sake of cleanliness is NOT an option here.
-
-## Column specific detailed insight
-
-### Item
-
-Unwanted (dirty) values are: ERROR, UNKNOWN, nan
-
-| Item | Count |
-| --- | --- |
-| Juice | 1171 |
-| Coffee | 1165 |
-| Salad | 1148 |
-| Cake | 1139 |
-| Sandwich | 1131 |
-| Smoothie | 1096 |
-| Cookie | 1092 |
-| Tea | 1089 |
-| *UNKNOWN* | *344* |
-| *nan* | *333* |
-| *ERROR* | *292* |
-
-**Total unwanted values: 969**
-
-There are no significant differences among the orders of the items. Meaning, there is no hidden pattern to discover.
-
-### Quantity
-
-Unwanted (dirty) values are: ERROR, UNKNOWN, nan
-
-| Quantity | Count |
-| --- | --- |
-| 5 | 2013 |
-| 2 | 1974 |
-| 4 | 1863 |
-| 3 | 1849 |
-| 1 | 1822 |
-| *UNKNOWN* | *171* |
-| *ERROR* | *170* |
-| *nan* | *138* |
-
-**Total unwanted values: 479**
-**Minimum quantity: 1**
-**Maximum quantity: 5**
-
-> I think I should stop saving `value_counts` because more than half of the dataset contains null values. Quantity 5 has 2013 appearances, including those whose item is UNKOWN or whose price is nan. So, I don't think there would lie any meaningful info in keeping the counts.
-
-### Price Per Unit
-
 *(provided information)* Prices for menu items are consistent but may have missing or incorrect values introduced. The dataset includes the following menu items with their respective price ranges: 
 
 |Item|Price($)|
@@ -85,17 +27,24 @@ Unwanted (dirty) values are: ERROR, UNKNOWN, nan
 |Smoothie|4|
 |Juice|3|
 
-### Total Spent
+## NaN Values
 
-For records where `Total Spent` is null while `Quantity` and `Price Per Unit` are valid values, we recover (deduce the value of) `Total Spent` by multiplying the two valid columns. In doing so, the initial **502 NaNs** are reduced to **40 NaNs**.
+Originally the dataset contained two other dirty values which are UNKNOWN and ERROR. I have converted them to NaN values and the beneath NaN analysis considers this conversion.
 
-Applying this for `Quantity` and `Price Per Unit`, there respective initial NaN values and reduced ones are:
+||Transaction ID|Item|Quantity|Price Per Unit|Total Spent|Payment Method|Location|Transaction Date|
+|---|---|---|---|---|---|---|---|---|
+|NaN|0|969|479|533|502|**3178**|**3961**|460|
+|NaN Percentage|0%|9.7%|4.8%|5.3%|5%|**31.8%**|**39.6%**|4.6%|
 
-- `Quantity`: from **479** to **38**
-- `Price Per Unit`: from **533** to **38**
-- `Total Spent`: from **502** to **40**
+The column **Location** has the most nan values **3961** among the other columns.
 
-Overall, by doing this correlating process, **1398 rows (individual datapoints)** were affected; those with a NaN value in either of the three columns are deduced to a valid form.
+Out of the total 10,000 rows, **6911 rows** -- meaning around 70% of them -- contain at least 1 nan value. This means, blindfoldly droping rows with nan values for the sake of cleanliness is NOT an option here.
+
+## Column specific detailed insight
+
+### Item
+
+The available items are **Cake**, **Coffee**, **Cookie**, **Juice**, **Salad**, **Sandwich**, **Smoothie** and **Tea**.
 
 ### Payment Method
 
@@ -107,16 +56,12 @@ The available location values are **Takeaway** and **In-store**.
 
 ### Transaction Date
 
-Turns out, the dataset is about transactions made each day throughout the 365 days of the entire 2023 year.
+Mainly the dataset is about sales of items made in a day throughout the 365 days of the entire 2023 year.
 
-- **Minimum** sales happened in a day is **14** on **Feb 17**, **Mar 11**, and **Jul 22**.
-- **Maximum** sales happened in a day is **40** on **Feb 6**, and **Jun 16**.
-- On average (median), **26 sales** were made in a day.
-
-## Inter-column Deducing
+## Inter-column Deduction
 
 ### Relation between `Item` and `Price Per Unit`
 
-I mapped the missing values for `Price Per Unit` based on their valid `Item` values. In doing so, now, the NaN count for `Price Per Unit` **is reduced to 6**.
+I mapped the missing values for `Price Per Unit` based on their valid `Item` values. In doing so, now, the NaN count for `Price Per Unit` **goes down from 533 to 54**.
 
-However, mapping missing `Item` values based on their unit price is a bit tricky because there are two available items for a single price; A price of 3 for Cake and Juice. So I decided to leave the item value as NaN where the price is either 3 or 4. As a result, the NaN count **is reduced to 480**.
+However, mapping missing `Item` values based on their unit price is a bit tricky because there are two available items for a single price; A price of 3 for Cake and Juice. So I decided to leave the item value as NaN where the price is either 3 or 4. As a result, the NaN count **goes down from 969 to 501**.
