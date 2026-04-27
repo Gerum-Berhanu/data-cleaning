@@ -1,16 +1,15 @@
 import pandas as pd
 
-def find_nans(df: pd.DataFrame):
-    """
-    I want this function to search for nan values in every column
-    of a dataset and return:
-        - The total count nans in every column in the form of dict
-        where the keys are the names of the column
-        - the indices of the rows where there exist at least 1 nan.
-    """
+def get_valid_invalid(df: pd.DataFrame):
     cols = df.columns
 
-    nan_count = {col: df[col].isna().sum() for col in cols}
-    indices = df[df.isna().any(axis=1)].index
+    book = {}
+    for col in cols:
+        col_key = col.strip().replace(" ", "_").lower()
+        valid_key = f"valid_{col_key}"
+        invalid_key = f"invalid_{col_key}"
 
-    return nan_count, indices
+        book[valid_key] = df[col].notna()
+        book[invalid_key] = df[col].isna()
+
+    return book
