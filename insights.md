@@ -112,3 +112,11 @@ Turns out, the dataset is about transactions made each day throughout the 365 da
 - **Minimum** sales happened in a day is **14** on **Feb 17**, **Mar 11**, and **Jul 22**.
 - **Maximum** sales happened in a day is **40** on **Feb 6**, and **Jun 16**.
 - On average (median), **26 sales** were made in a day.
+
+## Inter-column Deducing
+
+### Relation between `Item` and `Price Per Unit`
+
+I mapped the missing values for `Price Per Unit` based on their valid `Item` values. In doing so, now, the NaN count for `Price Per Unit` **is reduced to 6**.
+
+However, mapping missing `Item` values based on their unit price is a bit tricky because there are two available items for a single price; A price of 3 for Cake and Juice. So I decided to leave the item value as NaN where the price is either 3 or 4. As a result, the NaN count **is reduced to 480**.
