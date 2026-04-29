@@ -65,3 +65,11 @@ Mainly the dataset is about sales of items made in a day throughout the 365 days
 I mapped the missing values for `Price Per Unit` based on their valid `Item` values. In doing so, now, the NaN count for `Price Per Unit` **goes down from 533 to 54**.
 
 However, mapping missing `Item` values based on their unit price is a bit tricky because there are two available items for a single price; A price of 3 for Cake and Juice. So I decided to leave the item value as NaN where the price is either 3 or 4. As a result, the NaN count **goes down from 969 to 501**.
+
+### Relation among `Quantity`, `Price Per Unit`, and `Total Spent`
+
+`Total Spent` is the product of `Quantity` and `Price Per Unit`. So, for records where `Total Spent` is nan while `Quantity` and `Price Per Unit` have valid values, we can deduce the true value for `Total Spent` by taking the product of the rest of the two. We can infer for such similar cases where `Quantity` or `Price Per Unit` are nan and find their value too. In doing so, here is a brief report on how many nan values were recovered:
+
+- `Total Spent`: from 502 to 23 nans
+- `Quantity`: from 479 to 23 nans
+- `Price Per Unit`: from 54 to 6 nans
