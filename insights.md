@@ -10,9 +10,9 @@ There are 10,000 records (recorded data) with 8 fields/columns. The 8 fields, wi
 - Total Spent *(float)*
 - Payment Method *(str)*
 - Location *(str)*
-- Transaction Date *(str)*
+- Transaction Date *(datetime)*
 
-As-is, each recorded data is of type string as perceived by pandas.
+As-is, each recorded data is of type string as perceived by pandas. Though, throughout this data cleaning process, I implemented the aformentioned expected data types except for `Quantity` for which I converted it to float.
 
 *(provided information)* Prices for menu items are consistent but may have missing or incorrect values introduced. The dataset includes the following menu items with their respective price ranges: 
 
@@ -38,7 +38,7 @@ Originally the dataset contained two other dirty values which are UNKNOWN and ER
 
 The column **Location** has the most nan values **3961** among the other columns.
 
-Out of the total 10,000 rows, **6911 rows** -- meaning around 70% of them -- contain at least 1 nan value. This means, blindfoldly droping rows with nan values for the sake of cleanliness is NOT an option here.
+Out of the total 10,000 rows, **6911 rows** -- meaning around 70% of them -- contain at least 1 nan value. This means, blindly droping rows with nan values for the sake of cleanliness is NOT an option here.
 
 ## Column specific detailed insight
 
@@ -60,7 +60,7 @@ Mainly the dataset is about sales of items made in a day throughout the 365 days
 
 ## Inter-column Deduction
 
-### Relation between `Item` and `Price Per Unit`
+### Relation between `Item` and `Price Per Unit` (1st round check)
 
 I mapped the missing values for `Price Per Unit` based on their valid `Item` values. In doing so, now, the NaN count for `Price Per Unit` **goes down from 533 to 54**.
 
@@ -73,3 +73,14 @@ However, mapping missing `Item` values based on their unit price is a bit tricky
 - `Total Spent`: from 502 to 23 nans
 - `Quantity`: from 479 to 23 nans
 - `Price Per Unit`: from 54 to 6 nans
+
+### Relation between `Item` and `Price Per Unit` (2nd round check)
+
+With this second round check, I have managed to deduce **21 more values (501 - 480) for missing items**. This is possible because we got more valid price values in the quantity-price-total deduction step.
+
+### Conclusion
+
+After this Inter-column Deduction process, we now know that:
+
+- the 480 missing values for items are guaranteed to be one of these: **Cake**, **Juice**, **Sandwich** or **Smoothie**.
+- there exist no combination of quantity, unit price and total spent where only one of them is nan while the other two have valid values. In other words, it's either `[nan, nan, valid]` (in any permutation) or `[nan, nan, nan]` if there has to be nan in the combination of these three columns.
