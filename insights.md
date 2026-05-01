@@ -12,7 +12,7 @@ There are 10,000 records (recorded data) with 8 fields/columns. The 8 fields, wi
 - Location *(str)*
 - Transaction Date *(datetime)*
 
-As-is, each recorded data is of type string as perceived by pandas. Though, throughout this data cleaning process, I implemented the aformentioned expected data types except for `Quantity` for which I converted it to float.
+As-is, each recorded data is of type string as perceived by pandas. Though, throughout this data cleaning process, I implemented the aformentioned expected data types except for `Quantity` for which I converted it to float for the sake of simplified and flexible calculation process.
 
 *(provided information)* Prices for menu items are consistent but may have missing or incorrect values introduced. The dataset includes the following menu items with their respective price ranges: 
 
@@ -84,3 +84,23 @@ After this Inter-column Deduction process, we now know that:
 
 - the 480 missing values for items are guaranteed to be one of these: **Cake**, **Juice**, **Sandwich** or **Smoothie**.
 - there exist no combination of quantity, unit price and total spent where only one of them is nan while the other two have valid values. In other words, it's either `[nan, nan, valid]` (in any permutation) or `[nan, nan, nan]` if there has to be nan in the combination of these three columns.
+
+Overall, here is the latest state of nans:
+| Column | Initial NaN Count | Current NaN Count | NaN Deduction Percentage |
+| - | - | - | - |
+| Transaction ID        | 0 | 0 | 0% |
+| Item                  | 969 | 480 | 50.5% |
+| Quantity              | 479 | 23 | 95.2% |
+| Price Per Unit        | 533 | 6 | 98.9% |
+| Total Spent           | 502 | 23 | 95.4% |
+| Payment Method        | 3178 | 3178 | 0% |
+| Location              | 3961 | 3961 | 0% |
+| Transaction Date      | 460 | 460 | 0% |
+
+## Checkpoint
+
+So far, we've cleaned the obvious one. There is no best guess, but 100% certainty that the values we've deduced are what would have been the values if they had been filled out properly. Any further progress to clean up the mess will force us to step out of our safe zone and dare to plug in values that may not be the actual reality. From here on, there will be no certainty but a best guess.
+
+How do we do this? We dive deeper studying the relationships and hidden patterns within the recorded data. For example, to deduce values for `Location`, we may look at the valid relationships between `Location` and `Total Spent`. If we find out that for a small amount of total spent, customers choose to order a takeaway, but for a huge one, in-store order is the most common one, we will apply this same logic for deducing invalid location values too.
+
+We follow this approach if it is required to have invalid values deduced with best guesses. However, if 100% certainty is needed, what we've done is all we can do, filling the nan values with "Unspecified".
