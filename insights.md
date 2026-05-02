@@ -38,7 +38,7 @@ Originally the dataset contained two other dirty values which are UNKNOWN and ER
 
 The column **Location** has the most nan values **3961** among the other columns.
 
-Out of the total 10,000 rows, **6911 rows** -- meaning around 70% of them -- contain at least 1 nan value. This means, blindly droping rows with nan values for the sake of cleanliness is NOT an option here.
+Out of the total 10,000 rows, **6911 rows** -- meaning around 70% of them -- contain at least 1 nan value. This means, blindly dropping rows with nan values for the sake of cleanliness is NOT an option here.
 
 ## Column specific detailed insight
 
@@ -104,3 +104,27 @@ So far, we've cleaned the obvious one. There is no best guess, but 100% certaint
 How do we do this? We dive deeper studying the relationships and hidden patterns within the recorded data. For example, to deduce values for `Location`, we may look at the valid relationships between `Location` and `Total Spent`. If we find out that for a small amount of total spent, customers choose to order a takeaway, but for a huge one, in-store order is the most common one, we will apply this same logic for deducing invalid location values too.
 
 We follow this approach if it is required to have invalid values deduced with best guesses. However, if 100% certainty is needed, what we've done is all we can do, filling the nan values with "Unspecified".
+
+## Imputation: The Strategy
+
+Doing imputation / interpolation involves diving deep into EDA (Exploratory Data Analysis).
+
+### Impute `Item`
+
+All (480) of the missing item rows are dropped.
+
+### Impute `Location` and `Payment Method`
+
+We filled nan values for both columns with **"Unspecified"**. In doing so, **5567 rows** were affected.
+
+### Impute `Quantity` and `Total Spent`
+
+We dropped all the 20 rows where both quantity and total spent are nan.
+
+### Impute `Transaction Date`
+
+We dropped all the 436 rows with nan transaction date.
+
+### Concluding Impute
+
+We dropped a total of 936 rows. The final dataframe in hand has a shape of **9064 rows x 8 columns**. 
