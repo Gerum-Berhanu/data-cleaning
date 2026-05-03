@@ -1,6 +1,9 @@
 import pandas as pd
 
 def get_valid_invalid(df: pd.DataFrame):
+    """
+    Returns a dictionary of boolean masks for valid (non-null) and invalid (null) values for each column.
+    """
     cols = df.columns
 
     book = {}
