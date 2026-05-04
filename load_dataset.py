@@ -9,6 +9,7 @@ def download_datasets(datasets):
     :param datasets: List of dictionaries with keys: 'link' (Kaggle handle), 'filename', and 'target_folder'.
     """
     base_dir = "./datasets"
+    notebooks_base_dir = "./notebooks"
     
     for dataset in datasets:
         link = dataset['link']
@@ -17,6 +18,13 @@ def download_datasets(datasets):
         
         target_dir = os.path.join(base_dir, target_folder)
         target_file = os.path.join(target_dir, filename)
+        
+        # Create corresponding notebooks directory
+        notebooks_dir = os.path.join(notebooks_base_dir, target_folder)
+        if not os.path.exists(notebooks_dir):
+            os.makedirs(notebooks_dir)
+            print(f"Created corresponding notebook directory at {notebooks_dir}")
+
         print(f"Targeting file: {target_file}")
 
         # Check if the file already exists locally
