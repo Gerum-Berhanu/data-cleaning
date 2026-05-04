@@ -3,47 +3,71 @@ import os
 import shutil
 import pandas as pd
 
-def main():
-    filename = "dirty_cafe_sales.csv"
-    # 1. Define your target destination first
-    target_dir = "./dataset"
-    target_file = os.path.join(target_dir, filename)
-    print(target_file)
-
-    # 2. Check if the file already exists locally
-    if os.path.exists(target_file):
-        print(f"Dataset already exists at {target_file}. Skipping download...")
-    else:
-        print("Dataset not found locally. Starting download...")
+def download_datasets(datasets):
+    """
+    Downloads multiple datasets from Kaggle.
+    :param datasets: List of dictionaries with keys: 'link' (Kaggle handle), 'filename', and 'target_folder'.
+    """
+    base_dir = "./datasets"
+    
+    for dataset in datasets:
+        link = dataset['link']
+        filename = dataset['filename']
+        target_folder = dataset['target_folder']
         
-        # 3. Download to the default cache
-        cache_path = kagglehub.dataset_download("ahmedmohamed2003/cafe-sales-dirty-data-for-cleaning-training")
+        target_dir = os.path.join(base_dir, target_folder)
+        target_file = os.path.join(target_dir, filename)
+        print(f"Targeting file: {target_file}")
 
-        # 4. Create the directory if it doesn't exist
-        if not os.path.exists(target_dir):
-            os.makedirs(target_dir)
-
-        # 5. Locate the downloaded file and move it
-        # * Note: sometimes kagglehub returns the file path directly, 
-        # but usually it's a folder.
-        if os.path.isdir(cache_path):
-            downloaded_file = os.path.join(cache_path, filename)
+        # Check if the file already exists locally
+        if os.path.exists(target_file):
+            print(f"Dataset already exists at {target_file}. Skipping download...")
         else:
-            downloaded_file = cache_path
+            print(f"Dataset not found locally. Starting download for {link}...")
+            
+            # Download to the default cache
+            cache_path = kagglehub.dataset_download(link)
 
-        if os.path.exists(downloaded_file):
-            shutil.move(downloaded_file, target_file)
-            print(f"File successfully moved to: {target_file}")
+            # Create the directory if it doesn't exist
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
+
+            # Locate the downloaded file and move it
+            if os.path.isdir(cache_path):
+                downloaded_file = os.path.join(cache_path, filename)
+            else:
+                downloaded_file = cache_path
+
+            if os.path.exists(downloaded_file):
+                shutil.move(downloaded_file, target_file)
+                print(f"File successfully moved to: {target_file}")
+            else:
+                print(f"Could not find {filename} in the downloaded cache from {cache_path}.")
+
+        # Quick check after possible download
+        if os.path.exists(target_file):
+            df = pd.read_csv(target_file)
+            print(f"\nQuick check for {filename} - First 5 rows:")
+            print(df.head())
         else:
-            print(f"Could not find {filename} in the downloaded cache.")
+            print(f"\nError: Could not load data because the file {target_file} is missing.")
+        print("-" * 50)
 
-    # 6. A quick check (Always runs)
-    if os.path.exists(target_file):
-        df = pd.read_csv(target_file)
-        print("\nQuick check - First 5 rows:")
-        print(df.head())
-    else:
-        print("\nError: Could not load data because the file is missing.")
+def main():
+    datasets_to_download = [
+        {
+            "link": "ahmedmohamed2003/cafe-sales-dirty-data-for-cleaning-training",
+            "filename": "dirty_cafe_sales.csv",
+            "target_folder": "dirty_cafe_sales"
+        },
+        {
+            "link": "desolution01/messy-employee-dataset",
+            "filename": "Messy_Employee_dataset.csv",
+            "target_folder": "messy_employee_dataset"
+        },
+    ]
+    
+    download_datasets(datasets_to_download)
 
 if __name__ == "__main__":
     main()
