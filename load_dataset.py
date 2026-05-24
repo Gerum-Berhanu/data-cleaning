@@ -2,8 +2,9 @@ import kagglehub
 import os
 import shutil
 import pandas as pd
+import argparse
 
-def download_datasets(datasets):
+def download_datasets(datasets, quick_check=False):
     """
     Downloads multiple datasets from Kaggle.
     :param datasets: List of dictionaries with keys: 'link' (Kaggle handle) and 'target_folder'.
@@ -14,8 +15,8 @@ def download_datasets(datasets):
         link = dataset['link']
         target_folder = dataset['target_folder']
         
-        target_dir = os.path.join(base_dir, target_folder, "data")
-        target_file = os.path.join(target_dir, "raw.csv")
+        target_dir = os.path.join(base_dir, target_folder, "data").replace("\\", "/")
+        target_file = os.path.join(target_dir, "raw.csv").replace("\\", "/")
         
         print(f"Targeting file: {target_file}")
 
@@ -50,15 +51,20 @@ def download_datasets(datasets):
                 print(f"Could not find any .csv file in the downloaded cache from {cache_path}.")
 
         # Quick check after possible download
-        if os.path.exists(target_file):
-            df = pd.read_csv(target_file)
-            print(f"\nQuick check for {target_folder} (raw.csv) - First 5 rows:")
-            print(df.head())
-        else:
-            print(f"\nError: Could not load data because the file {target_file} is missing.")
+        if quick_check:
+            if os.path.exists(target_file):
+                df = pd.read_csv(target_file)
+                print(f"\nQuick check for {target_folder} (raw.csv) - First 5 rows:")
+                print(df.head())
+            else:
+                print(f"\nError: Could not load data because the file {target_file} is missing.")
         print("-" * 50)
 
 def main():
+    parser = argparse.ArgumentParser(description="Download Kaggle datasets for portfolio projects.")
+    parser.add_argument("--check", action="store_true", help="Print the first 5 rows of each dataset after downloading/checking.")
+    args = parser.parse_args()
+
     datasets_to_download = [
         {
             "link": "ahmedmohamed2003/cafe-sales-dirty-data-for-cleaning-training",
@@ -68,9 +74,13 @@ def main():
             "link": "desolution01/messy-employee-dataset",
             "target_folder": "03_employee_metrics"
         },
+        {
+            "link": "yagunnersya/fifa-21-messy-raw-dataset-for-cleaning-exploring",
+            "target_folder": "04_fifa_21"
+        },
     ]
     
-    download_datasets(datasets_to_download)
+    download_datasets(datasets_to_download, quick_check=args.check)
 
 if __name__ == "__main__":
     main()
