@@ -6,25 +6,17 @@ import pandas as pd
 def download_datasets(datasets):
     """
     Downloads multiple datasets from Kaggle.
-    :param datasets: List of dictionaries with keys: 'link' (Kaggle handle), 'filename', and 'target_folder'.
+    :param datasets: List of dictionaries with keys: 'link' (Kaggle handle) and 'target_folder'.
     """
-    base_dir = "./datasets"
-    notebooks_base_dir = "./notebooks"
+    base_dir = "./projects"
     
     for dataset in datasets:
         link = dataset['link']
-        filename = dataset['filename']
         target_folder = dataset['target_folder']
         
-        target_dir = os.path.join(base_dir, target_folder)
-        target_file = os.path.join(target_dir, filename)
+        target_dir = os.path.join(base_dir, target_folder, "data")
+        target_file = os.path.join(target_dir, "raw.csv")
         
-        # Create corresponding notebooks directory
-        notebooks_dir = os.path.join(notebooks_base_dir, target_folder)
-        if not os.path.exists(notebooks_dir):
-            os.makedirs(notebooks_dir)
-            print(f"Created corresponding notebook directory at {notebooks_dir}")
-
         print(f"Targeting file: {target_file}")
 
         # Check if the file already exists locally
@@ -41,21 +33,26 @@ def download_datasets(datasets):
                 os.makedirs(target_dir)
 
             # Locate the downloaded file and move it
-            if os.path.isdir(cache_path):
-                downloaded_file = os.path.join(cache_path, filename)
-            else:
+            if os.path.isdir(cache_path): # if what kaggle returns is the directory path
+                # Auto-detect the first CSV file in the directory
+                csv_files = [f for f in os.listdir(cache_path) if f.endswith('.csv')]
+                if csv_files:
+                    downloaded_file = os.path.join(cache_path, csv_files[0])
+                else:
+                    downloaded_file = None
+            else: # if what kaggle returns is the file path
                 downloaded_file = cache_path
 
-            if os.path.exists(downloaded_file):
+            if downloaded_file and os.path.exists(downloaded_file):
                 shutil.move(downloaded_file, target_file)
                 print(f"File successfully moved to: {target_file}")
             else:
-                print(f"Could not find {filename} in the downloaded cache from {cache_path}.")
+                print(f"Could not find any .csv file in the downloaded cache from {cache_path}.")
 
         # Quick check after possible download
         if os.path.exists(target_file):
             df = pd.read_csv(target_file)
-            print(f"\nQuick check for {filename} - First 5 rows:")
+            print(f"\nQuick check for {target_folder} (raw.csv) - First 5 rows:")
             print(df.head())
         else:
             print(f"\nError: Could not load data because the file {target_file} is missing.")
@@ -65,13 +62,11 @@ def main():
     datasets_to_download = [
         {
             "link": "ahmedmohamed2003/cafe-sales-dirty-data-for-cleaning-training",
-            "filename": "dirty_cafe_sales.csv",
-            "target_folder": "dirty_cafe_sales"
+            "target_folder": "01_cafe_sales"
         },
         {
             "link": "desolution01/messy-employee-dataset",
-            "filename": "Messy_Employee_dataset.csv",
-            "target_folder": "messy_employee_dataset"
+            "target_folder": "03_employee_metrics"
         },
     ]
     
