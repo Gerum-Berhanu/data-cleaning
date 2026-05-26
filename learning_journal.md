@@ -108,3 +108,6 @@ Below is the reflection of Gemini 3.1 Pro on the above statement.
 
 If you paste a checklist like this at the top of every new Jupyter Notebook, you will never get stuck wondering "what's next?" again. You just move to the next item on the assembly line.
 
+---
+
+I've finished cleaning the FIFA 21 dataset (though I may check back somethings). I didn't write an overall report because cmon I don't expect myself to learn everything at once. Clean report writing comes when I master the raw cleaning process.
