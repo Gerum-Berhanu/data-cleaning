@@ -64,3 +64,47 @@ By breaking one messy column into several distinct, single-purpose columns, your
 ---
 
 I've just learned that values can be left as null if their absence is explained by other columns.
+
+## May 26, 2026 | 04_fifa_21
+
+Do you know why it takes me so long on a single cleaning step? in other words, why can't I have a smooth, fast, and continuous workflow? Why do I need to stop at a step and think longer than it should take? Well obviously lack of experience it is. But I can't waste any more time till I get experienced. What's the shortcut to get there? The answer lies in identifying what the so-called "experience" would teach me; probably having clear guidelines. **Knowing where to start and what follows is the key to a blitzing workflow.**
+
+Below is the reflection of Gemini 3.1 Pro on the above statement.
+
+---
+
+**The 5-Step Data Cleaning Assembly Line**
+
+**1. The High-Level Sweep (Structure & Standardization)**
+
+**Goal:** Make the dataset easy to handle before doing deep work.
+**Action:** Standardize all column names (lowercase, no spaces).
+**Action:** Drop entirely empty rows and columns.
+**Action:** Check for and remove duplicate rows.
+
+**2. Type Conversion & Consistency (The Parsing Phase)**
+
+**Goal:** Ensure Python sees the data the way you see it.
+**Action:** Convert dates to datetime.
+**Action:** Strip currencies/symbols (like € or lbs) and cast to float/int.
+**Action:** Standardize categorical text (e.g., lowercase everything, strip trailing whitespaces).
+
+**3. Feature Extraction (The "Unpacking" Phase)**
+
+**Goal:** Break down garbage-drawer columns.
+**Action:** This is exactly what you did with the Contract column! Split mixed data into multiple, single-purpose columns.
+
+**4. The Missing Data Strategy (Imputation)**
+
+**Goal:** Handle the nulls. (Doing this AFTER extraction and type conversion is crucial, because those previous steps often reveal or create new nulls!).
+**Action:** Revisit your rule from May 24 (What is the goal? Model training vs Analytics?).
+**Action:** Drop, impute (mean/median/mode), or fill with "Unknown".
+
+**5. Sanity Checks & Outliers (The Logic Phase)**
+
+**Goal:** Catch things that are formatted correctly but logically impossible.
+**Action:** describe() to check min/max. Are there players weighing 5kg? Are there negative salaries?
+**Action:** Use Regex to find weird name formats (like the "jjjjjj" thought you had!).
+
+If you paste a checklist like this at the top of every new Jupyter Notebook, you will never get stuck wondering "what's next?" again. You just move to the next item on the assembly line.
+
