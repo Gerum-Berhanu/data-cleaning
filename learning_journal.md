@@ -60,3 +60,7 @@ For players who are "Free" or "On Loan", their `Contract_Start_Year` and `Contra
 Once you have squeezed all the useful information out of the original `Contract` column and put it into your new, clean columns (`Contract_Type`, `Contract_Start_Year`, `Contract_End_Year`), the original `Contract` column is virtually useless. At the very end of your script, you can confidently write `df = df.drop(columns=['Contract'])`.
 
 By breaking one messy column into several distinct, single-purpose columns, your data becomes incredibly easy to analyze and visualize later!
+
+---
+
+I've just learned that values can be left as null if their absence is explained by other columns.
