@@ -78,6 +78,10 @@ def main():
             "link": "yagunnersya/fifa-21-messy-raw-dataset-for-cleaning-exploring",
             "target_folder": "04_fifa_21"
         },
+        {
+            "link": "kandeelai22/messy-e-commerce-sales-dataset",
+            "target_folder": "05_ecommerce_sales"
+        },
     ]
     
     download_datasets(datasets_to_download, quick_check=args.check)
