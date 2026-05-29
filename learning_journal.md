@@ -115,3 +115,7 @@ I've finished cleaning the FIFA 21 dataset (though I may check back somethings).
 ## May 29, 2026 | 05_ecommerce_sales
 
 The `duplicated` method of dataframes spares the first occurrences.
+
+---
+
+I found a case where expected column relations are broken. For example, usually $\text{Quantity} \times \text{Price} = \text{Total}$. In this `05_ecommerce_sales` project, I found 10 occurrences where their is a noticable inequality to the total amount. However, `Total` may include tax, discounts, or refunds. Assuming this, I chose to keep these inequalities as-is. Now I'm reminded to ask the client for such crucial information about the dataset and column relations.
