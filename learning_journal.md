@@ -111,3 +111,7 @@ If you paste a checklist like this at the top of every new Jupyter Notebook, you
 ---
 
 I've finished cleaning the FIFA 21 dataset (though I may check back somethings). I didn't write an overall report because cmon I don't expect myself to learn everything at once. Clean report writing comes when I master the raw cleaning process.
+
+## May 29, 2026 | 05_ecommerce_sales
+
+The `duplicated` method of dataframes spares the first occurrences.
