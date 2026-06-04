@@ -82,6 +82,10 @@ def main():
             "link": "kandeelai22/messy-e-commerce-sales-dataset",
             "target_folder": "05_ecommerce_sales"
         },
+        {
+            "link": "bharatnatrayn/movies-dataset-for-feature-extracion-prediction",
+            "target_folder": "06_imdb_movies"
+        },
     ]
     
     download_datasets(datasets_to_download, quick_check=args.check)
