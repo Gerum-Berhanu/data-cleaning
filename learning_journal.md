@@ -119,3 +119,15 @@ The `duplicated` method of dataframes spares the first occurrences.
 ---
 
 I found a case where expected column relations are broken. For example, usually $\text{Quantity} \times \text{Price} = \text{Total}$. In this `05_ecommerce_sales` project, I found 10 occurrences where their is a noticable inequality to the total amount. However, `Total` may include tax, discounts, or refunds. Assuming this, I chose to keep these inequalities as-is. Now I'm reminded to ask the client for such crucial information about the dataset and column relations.
+
+## June 5, 2026 | 06_imdb_movies
+
+Two rows which are exactly identical, except for a single entry where one row contains NA while the other has a valid value, are considered duplicates (in pandas). This raises a whole new issue in handling duplicates.
+
+Case A\) If two rows are exactly identical in every aspect, we drop one of them.
+
+Case B\) For two identical rows where one of them contain more NA values but not any value that isn't in the other row, we simply drop it.
+
+Case C\) When two identical rows contain NA in different entries, they are still considered duplicates in pandas. In such cases, the right thing to do is to merge the two rows. Otherwise, dropping one of them at first glance means losing a potential valid data.
+
+The challenging (new) part of this path is in the merging of rows (Case C). How to achieve that?
