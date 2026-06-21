@@ -13,8 +13,6 @@ Here's what's inside:
 
 The projects are numbered in order on purpose. Early ones show where I started; later ones show where I am now. New projects will keep that sequence and extend the same ideas.
 
----
-
 ## Featured Project: IMDb Movies
 
 > **⭐ [06. IMDb Top Netflix Movies and TV Shows](projects/06_imdb_movies/README.md)**
@@ -31,8 +29,6 @@ This is my favorite work so far. It shows the full way I clean data today:
 
 Full report: **[Project 06 →](projects/06_imdb_movies/README.md)**
 
----
-
 ## How I Use Regex
 
 **Regex** (regular expressions) is pattern matching for text. I use it in almost every project. This is because messy data is usually messy *text*: wrong symbols, mixed formats, typos hiding in plain sight.
@@ -46,8 +42,6 @@ Full report: **[Project 06 →](projects/06_imdb_movies/README.md)**
 | **Split combined fields** | Department and region from `Finance-Texas` (Employee); height in `6'2"` vs `182cm` (FIFA) |
 
 I combine regex with pandas (`.str.match`, `.str.contains`, `.str.replace`) so I can flag bad rows, fix formats in bulk, and only then decide what to drop, fill, or leave alone. Regex finds the mess; the cleaning rules decide what to do about it.
-
----
 
 ## How My Approach Grew (Projects 01 → 06 …)
 
@@ -64,8 +58,6 @@ Each project adds one idea I still use. Together they're one story.
 
 I also write in a **[learning journal](learning_journal.md)**,  dated notes on what I learned and how my workflow changed.
 
----
-
 ## Core Principles
 
 1. **Know the goal**: Training a model, a dashboard, and a website need different kinds of "clean."
@@ -74,8 +66,6 @@ I also write in a **[learning journal](learning_journal.md)**,  dated notes on w
 4. **Blank is OK sometimes**: Missing gross on 9,500 movies is honest; making up numbers is not.
 5. **Write it down**: Every project has a README anyone can read.
 6. **Keep a paper trail**: Bad orders go to a reject list.
-
----
 
 ## All Projects (So Far)
 
@@ -94,8 +84,6 @@ Each folder has `NN_data_cleaning.ipynb` (notebook) and `README.md` (report).
 
 **Data files:** CSVs live in each project's `data/` folder. That folder is ignored by git, so run the download script below after you clone.
 
----
-
 ## Getting Started
 
 ```bash
@@ -110,8 +98,6 @@ Open a notebook in Jupyter or VS Code, e.g. `projects/06_imdb_movies/06_data_cle
 
 **Downloads:** [`load_dataset.py`](load_dataset.py) gets Kaggle data for projects **01, 03, 04, 05, 06**. For **02** (Marketing), use the [YouTube tutorial](https://youtu.be/NeJKaolLQqU) data and put `raw.csv` in `projects/02_marketing_campaign/data/`.
 
----
-
 ## Tech Stack
 
 | Tool | Use |
@@ -123,8 +109,6 @@ Open a notebook in Jupyter or VS Code, e.g. `projects/06_imdb_movies/06_data_cle
 | openpyxl | Excel export (project 06) |
 
 See [`requirements.txt`](requirements.txt) for the full list.
-
----
 
 ## Quick Links
 
