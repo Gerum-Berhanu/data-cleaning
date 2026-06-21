@@ -1,130 +1,173 @@
-# Data Cleaning Report
+# Cafe Sales — Data Cleaning Report
 
-## Overview
+## At a Glance
 
-There are 10,000 records (recorded data) with 8 fields/columns. The 8 fields, with their **expected** data types are:
-- Transaction ID *(str)*
-- Item *(str)*
-- Quantity *(int)*
-- Price Per Unit *(float)*
-- Total Spent *(float)*
-- Payment Method *(str)*
-- Location *(str)*
-- Transaction Date *(datetime)*
+This dataset records **10,000 café transactions** from 2023 — what was ordered, how much was spent, how the customer paid, and whether they ordered in-store or takeaway. The raw file was heavily incomplete: roughly **70% of rows** had at least one missing value, including placeholder text (`UNKNOWN`, `ERROR`) instead of real blanks. Through a careful two-phase approach — first recovering values we could prove with math, then making deliberate best-guess decisions — the dataset was reduced to **9,064 complete, trustworthy rows** exported as `data/clean.csv`.
 
-As-is, each recorded data is of type string as perceived by pandas. Though, throughout this data cleaning process, I implemented the aformentioned expected data types except for `Quantity` for which I converted it to float for the sake of simplified and flexible calculation process.
+## Who Would Use This Data?
 
-*(provided information)* Prices for menu items are consistent but may have missing or incorrect values introduced. The dataset includes the following menu items with their respective price ranges: 
+- **Café owner / manager:** Build a sales dashboard showing daily revenue, popular items, and payment-method trends across locations.
+- **ML engineer / data scientist:** Train demand-forecasting models to predict popular items by time of day, month, or location (In-store vs Takeaway).
+- **Web developer:** Integrate cleaned transaction data into a point-of-sale admin panel or customer-facing order history page.
+- **Inventory planner:** Analyze quantity patterns per menu item to optimize stock levels throughout the year.
 
-|Item|Price($)|
-|---|---|
-|Coffee|2|
-|Tea|1.5|
-|Sandwich|4|
-|Salad|5|
-|Cake|3|
-|Cookie|1|
-|Smoothie|4|
-|Juice|3|
+## About the Dataset
 
-## NaN Values
+- **Source:** [Kaggle — Cafe Sales Dirty Data for Cleaning Training](https://www.kaggle.com/datasets/ahmedmohamed2003/cafe-sales-dirty-data-for-cleaning-training). Loaded from `data/raw.csv`.
+- **Size:** **10,000 rows × 8 columns** (raw) → **9,064 rows × 8 columns** (final)
 
-Originally the dataset contained two other dirty values which are UNKNOWN and ERROR. I have converted them to NaN values and the beneath NaN analysis considers this conversion.
+| Column | What it means |
+|--------|---------------|
+| `Transaction ID` | Unique identifier for each sale |
+| `Item` | Menu item ordered |
+| `Quantity` | Number of items purchased (1–5) |
+| `Price Per Unit` | Price of one item in USD |
+| `Total Spent` | Total amount paid (Quantity × Price Per Unit) |
+| `Payment Method` | Credit Card, Cash, or Digital Wallet |
+| `Location` | In-store or Takeaway |
+| `Transaction Date` | Date of the sale (2023) |
 
-||Transaction ID|Item|Quantity|Price Per Unit|Total Spent|Payment Method|Location|Transaction Date|
-|---|---|---|---|---|---|---|---|---|
-|NaN|0|969|479|533|502|**3178**|**3961**|460|
-|NaN Percentage|0%|9.7%|4.8%|5.3%|5%|**31.8%**|**39.6%**|4.6%|
+**Fixed menu prices** (each item always costs the same):
 
-The column **Location** has the most nan values **3961** among the other columns.
+| Item | Price (\$) |
+|------|-----------|
+| Coffee | 2.00 |
+| Tea | 1.50 |
+| Sandwich | 4.00 |
+| Salad | 5.00 |
+| Cake | 3.00 |
+| Cookie | 1.00 |
+| Smoothie | 4.00 |
+| Juice | 3.00 |
 
-Out of the total 10,000 rows, **6911 rows** -- meaning around 70% of them -- contain at least 1 nan value. This means, blindly dropping rows with nan values for the sake of cleanliness is NOT an option here.
+Note: Cake and Juice both cost \$3; Sandwich and Smoothie both cost \$4 — this ambiguity matters during cleaning.
 
-## Column specific detailed insight
+## What Was Wrong With the Raw Data?
 
-### Item
+- **Everything stored as text:** Numbers and dates were read as strings, not proper numeric or date types.
+- **Placeholder values:** `UNKNOWN` and `ERROR` appeared instead of blank cells — converted to standard missing values (NaN).
+- **Widespread missing data:** 6,911 of 10,000 rows (≈70%) had at least one missing field.
+- **Worst-affected columns:** Location (39.6% missing), Payment Method (31.8%), Item (9.7%).
+- **Recoverable relationships ignored in raw data:** Item maps to a fixed price; Total = Quantity × Price — these rules were not applied in the source file.
 
-The available items are **Cake**, **Coffee**, **Cookie**, **Juice**, **Salad**, **Sandwich**, **Smoothie** and **Tea**.
+### Initial missing-value counts (after UNKNOWN/ERROR → NaN)
 
-### Payment Method
+| Column | Missing | % Missing |
+|--------|---------|-----------|
+| Transaction ID | 0 | 0% |
+| Item | 969 | 9.7% |
+| Quantity | 479 | 4.8% |
+| Price Per Unit | 533 | 5.3% |
+| Total Spent | 502 | 5.0% |
+| Payment Method | 3,178 | 31.8% |
+| Location | 3,961 | 39.6% |
+| Transaction Date | 460 | 4.6% |
 
-The available payment methods are **Credit Card**, **Cash**, and **Digital Wallet**.
+## Cleaning Process
 
-### Location
+### Phase 1 — Certain deductions (100% confidence)
 
-The available location values are **Takeaway** and **In-store**.
+These steps recover values that *must* be correct based on known rules — no guessing involved.
 
-### Transaction Date
+1. **Data type conversion** — Converted Quantity, Price Per Unit, and Total Spent to numbers; Transaction Date to proper dates.
 
-Mainly the dataset is about sales of items made in a day throughout the 365 days of the entire 2023 year.
+2. **Validation checks (all passed)** — Confirmed no out-of-menu items, no zero/negative quantities, no invalid prices outside the fixed menu, and dates spanning 366 unique days in 2023.
 
-## Inter-column Deduction
+3. **Item → Price mapping (1st round)** — Used the fixed menu to fill missing prices from known items. Price Per Unit missing: **533 → 54**.
 
-### Relation between `Item` and `Price Per Unit` (1st round check)
+4. **Price → Item mapping (1st round, partial)** — Reverse-mapped price to item for unambiguous prices only (\$1→Cookie, \$1.50→Tea, \$2→Coffee, \$5→Salad). **Skipped prices \$3 and \$4** because Cake/Juice and Sandwich/Smoothie share those prices. Item missing: **969 → 501**.
 
-I mapped the missing values for `Price Per Unit` based on their valid `Item` values. In doing so, now, the NaN count for `Price Per Unit` **goes down from 533 to 54**.
+5. **Quantity × Price = Total (arithmetic deduction)** — Used the formula in all directions to recover missing values:
 
-However, mapping missing `Item` values based on their unit price is a bit tricky because there are two available items for a single price; A price of 3 for Cake and Juice. So I decided to leave the item value as NaN where the price is either 3 or 4. As a result, the NaN count **goes down from 969 to 501**.
+    | Column | Before | After | Recovered |
+    |--------|--------|-------|-----------|
+    | Total Spent | 502 | 23 | 479 |
+    | Quantity | 479 | 23 | 456 |
+    | Price Per Unit | 54 | 6 | 48 |
 
-### Relation among `Quantity`, `Price Per Unit`, and `Total Spent`
+6. **Item → Price mapping (2nd round)** — With more prices now known, deduced **21 more items**. Item missing: **501 → 480**.
 
-`Total Spent` is the product of `Quantity` and `Price Per Unit`. So, for records where `Total Spent` is nan while `Quantity` and `Price Per Unit` have valid values, we can deduce the true value for `Total Spent` by taking the product of the rest of the two. We can infer for such similar cases where `Quantity` or `Price Per Unit` are nan and find their value too. In doing so, here is a brief report on how many nan values were recovered:
+7. **Validation loops** — Confirmed zero remaining mismatches between item/price and quantity/price/total combinations.
 
-- `Total Spent`: from 502 to 23 nans
-- `Quantity`: from 479 to 23 nans
-- `Price Per Unit`: from 54 to 6 nans
+**Post-deduction state:**
 
-### Relation between `Item` and `Price Per Unit` (2nd round check)
+| Column | Missing |
+|--------|---------|
+| Item | 480 |
+| Quantity | 23 |
+| Price Per Unit | 6 |
+| Total Spent | 23 |
+| Payment Method | 3,178 |
+| Location | 3,961 |
+| Transaction Date | 460 |
 
-With this second round check, I have managed to deduce **21 more values (501 - 480) for missing items**. This is possible because we got more valid price values in the quantity-price-total deduction step.
+**Key certainty finding:** The 480 remaining missing items are guaranteed to be one of **Cake, Juice, Sandwich, or Smoothie** — but we cannot tell which one for each row.
 
-### Conclusion
+```mermaid
+flowchart LR
+  raw["raw.csv (10,000 rows)"] --> types["Type conversion"]
+  types --> itemPrice["Item ↔ Price deduction"]
+  itemPrice --> arithmetic["Qty × Price = Total"]
+  arithmetic --> itemPrice2["2nd Item ↔ Price round"]
+  itemPrice2 --> checkpoint["Checkpoint: certainty ends"]
+  checkpoint --> impute["Imputation decisions"]
+  impute --> final["clean.csv (9,064 rows)"]
+```
 
-After this Inter-column Deduction process, we now know that:
+### Checkpoint — where certainty ends
 
-- the 480 missing values for items are guaranteed to be one of these: **Cake**, **Juice**, **Sandwich** or **Smoothie**.
-- there exist no combination of quantity, unit price and total spent where only one of them is nan while the other two have valid values. In other words, it's either `[nan, nan, valid]` (in any permutation) or `[nan, nan, nan]` if there has to be nan in the combination of these three columns.
+Everything recovered so far is **provably correct**. Further cleaning requires educated guesses that may not match reality. From here, the strategy shifts to imputation (filling missing values) or dropping rows.
 
-Overall, here is the latest state of nans:
-| Column | Initial NaN Count | Current NaN Count | NaN Deduction Percentage |
-| - | - | - | - |
-| Transaction ID        | 0 | 0 | 0% |
-| Item                  | 969 | 480 | 50.5% |
-| Quantity              | 479 | 23 | 95.2% |
-| Price Per Unit        | 533 | 6 | 98.9% |
-| Total Spent           | 502 | 23 | 95.4% |
-| Payment Method        | 3178 | 3178 | 0% |
-| Location              | 3961 | 3961 | 0% |
-| Transaction Date      | 460 | 460 | 0% |
+### Phase 2 — Imputation and row removal (best-guess decisions)
 
-## Checkpoint
+8. **Item — drop, don't guess** — The 480 missing items cannot be reliably assigned (Cake vs Juice at \$3; Sandwich vs Smoothie at \$4). Exploratory analysis (e.g. January shows ~62% of price-\$4 sales are Sandwiches) was deemed insufficient — filling would affect only ~14 values but risk being wrong. **Dropped all 480 rows** with missing Item → **9,520 rows**.
 
-So far, we've cleaned the obvious one. There is no best guess, but 100% certainty that the values we've deduced are what would have been the values if they had been filled out properly. Any further progress to clean up the mess will force us to step out of our safe zone and dare to plug in values that may not be the actual reality. From here on, there will be no certainty but a best guess.
+9. **Location and Payment Method — fill with "Unspecified"** — Rather than guessing patterns (e.g. linking location to order size), filled missing values with the label **"Unspecified"**. **5,567 rows** affected.
 
-How do we do this? We dive deeper studying the relationships and hidden patterns within the recorded data. For example, to deduce values for `Location`, we may look at the valid relationships between `Location` and `Total Spent`. If we find out that for a small amount of total spent, customers choose to order a takeaway, but for a huge one, in-store order is the most common one, we will apply this same logic for deducing invalid location values too.
+10. **Quantity and Total Spent — drop double-missing** — **20 rows** where both Quantity and Total Spent were missing were dropped → **9,500 rows**.
 
-We follow this approach if it is required to have invalid values deduced with best guesses. However, if 100% certainty is needed, what we've done is all we can do, filling the nan values with "Unspecified".
+11. **Transaction Date — drop undated rows** — **436 rows** with no date were dropped (264 of these already had Unspecified location and/or payment) → **9,064 rows**.
 
-## Imputation: The Strategy
+12. **Finalization** — Cast Quantity to integer; confirmed **0 duplicates**. Exported to `data/clean.csv`.
 
-Doing imputation / interpolation involves diving deep into EDA (Exploratory Data Analysis).
+### Overall NaN recovery summary
 
-### Impute `Item`
+| Column | Initial Missing | After Deduction | Final Missing | Recovery |
+|--------|----------------|-----------------|---------------|----------|
+| Transaction ID | 0 | 0 | 0 | — |
+| Item | 969 | 480 | 0 (480 dropped) | 50.5% deduced |
+| Quantity | 479 | 23 | 0 | 95.2% deduced |
+| Price Per Unit | 533 | 6 | 0 | 98.9% deduced |
+| Total Spent | 502 | 23 | 0 | 95.4% deduced |
+| Payment Method | 3,178 | 3,178 | 0 (filled "Unspecified") | — |
+| Location | 3,961 | 3,961 | 0 (filled "Unspecified") | — |
+| Transaction Date | 460 | 460 | 0 (436 dropped) | — |
 
-All (480) of the missing item rows are dropped.
+## Key Results
 
-### Impute `Location` and `Payment Method`
+| Metric | Value |
+|--------|-------|
+| Rows before / after | 10,000 / 9,064 |
+| Total rows dropped | 936 (480 item + 20 qty/total + 436 date) |
+| Rows with "Unspecified" location or payment | 5,567 |
+| All 8 columns fully populated | Yes (9,064 non-null each) |
+| Duplicate transactions | 0 |
 
-We filled nan values for both columns with **"Unspecified"**. In doing so, **5567 rows** were affected.
+**Initial numeric stats (raw data):**
 
-### Impute `Quantity` and `Total Spent`
+| | Quantity | Price Per Unit | Total Spent |
+|---|----------|----------------|-------------|
+| Mean | 3.03 | 2.95 | 8.92 |
+| Min | 1 | 1.00 | 1.00 |
+| Max | 5 | 5.00 | 25.00 |
 
-We dropped all the 20 rows where both quantity and total spent are nan.
+## Output Files
 
-### Impute `Transaction Date`
+| File | Description |
+|------|-------------|
+| `data/raw.csv` | Original messy input |
+| `data/clean.csv` | Final cleaned dataset (9,064 rows × 8 columns) |
 
-We dropped all the 436 rows with nan transaction date.
+## Notebook
 
-### Concluding Impute
-
-We dropped a total of 936 rows. The final dataframe in hand has a shape of **9064 rows x 8 columns**. 
+Full step-by-step code and outputs: [`01_data_cleaning.ipynb`](01_data_cleaning.ipynb)
